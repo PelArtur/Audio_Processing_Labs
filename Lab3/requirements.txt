@@ -6,3 +6,5 @@ librosa
 tqdm
 opencv-python
 pyloudnorm
+torch
+torchvision
