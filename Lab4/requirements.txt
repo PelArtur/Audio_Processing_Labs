@@ -1,0 +1,9 @@
+transformers
+accelerate
+evaluate
+jiwer
+tensorboard
+gradio
+pytorch_lightning
+ipywidgets
+gdown
