@@ -18,8 +18,7 @@ Although the original paper was released in 2019, Conv-TasNet remains an influen
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/conv-tasnet-custom.git
-   cd conv-tasnet-custom
+   git clone [https://github.com/your-username/conv-tasnet-custom.git](https://github.com/PelArtur/Audio_Processing_Labs/tree/main/Paper_review)
     ```
 
 2. Create a virtual environment and install dependencies:
