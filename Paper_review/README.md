@@ -38,8 +38,8 @@ Instead of using the WSJ0-2mix dataset (which is licensed and not publicly avail
 📦 [Speaker Recognition Audio Dataset](https://www.kaggle.com/datasets/vjcalling/speaker-recognition-audio-dataset)
 
 This dataset contains 50 speakers, each with ~100 one-minute clips. I created two-speaker mixtures manually to mimic the properties of the WSJ0-2mix dataset:
-- Sampling rate: ≥ 8000 Hz
-- Clip duration: ≥ 4 seconds
+- Sampling rate: 8000 Hz
+- Clip duration: 4 seconds
 - Unique speakers per split
 
 Mixture generation is done in [`generate_dataset.ipynb`](generate_dataset.ipynb). The final split:
