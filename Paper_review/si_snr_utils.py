@@ -1,5 +1,4 @@
 import torch
-import mir_eval
 import numpy as np
 from itertools import permutations
 
