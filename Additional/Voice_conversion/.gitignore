@@ -171,3 +171,6 @@ cython_debug/
 .pypirc
 
 #Dataset
+LibriSpeech/
+dev-clean.tar.gz
+train-clean-100.tar.gz

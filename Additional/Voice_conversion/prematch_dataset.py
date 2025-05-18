@@ -1,7 +1,7 @@
 import argparse
 import gc
 import os
-import sys
+import csv
 import time
 from pathlib import Path
 
@@ -25,12 +25,22 @@ synthesis_cache = {}
 
 def make_librispeech_df(root_path: Path) -> pd.DataFrame:
     all_files = []
-    folders = ['train-clean-100', 'dev-clean']
-    print(f"[LIBRISPEECH] Computing folders {folders}")
-    for f in folders:
-        all_files.extend(list((root_path/f).rglob('**/*.flac')))
-    speakers = ['ls-' + f.stem.split('-')[0] for f in all_files]
-    df = pd.DataFrame({'path': all_files, 'speaker': speakers})
+    targets = []
+    files = ['train.csv', 'valid.csv']
+    print(f"[LIBRISPEECH] Computing data {files}")
+    for file in files:
+        with open(os.path.join(root_path, file), newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in spamreader:
+                all_files.append(row[0])
+                targets.append(row[1])
+
+    # all_files.pop(0)
+    # targets.pop(0)
+    all_files.remove("audio_path")
+    targets.remove("feat_path")
+    speakers = ['ls-' + f.split('-')[0] for f in all_files]
+    df = pd.DataFrame({'path': all_files, 'speaker': speakers, 'target': targets})
     return df
 
 
@@ -51,11 +61,11 @@ def main(args):
     print("All done!", flush=True)
 
 
-def path2pools(path: Path, wavlm: nn.Module(), match_weights: Tensor, synth_weights: Tensor, device):
+def path2pools(path: Path, wavlm: nn.Module, match_weights: Tensor, synth_weights: Tensor, device):
     """Given a waveform `path`, compute the matching pool"""
 
-    uttrs_from_same_spk = sorted(list(path.parent.rglob('**/*.flac')))
-    uttrs_from_same_spk.remove(path)
+    uttrs_from_same_spk = sorted(list(Path(path).parent.rglob('**/*.flac')))
+    uttrs_from_same_spk.remove(Path(path))
     matching_pool = []
     synth_pool = []
     for pth in uttrs_from_same_spk:
@@ -111,12 +121,12 @@ def extract(df: pd.DataFrame, wavlm: nn.Module, device, ls_path: Path, out_path:
     pb = progress_bar(df.iterrows(), total=len(df))
 
     for i, row in pb:
-        rel_path = Path(row.path).relative_to(ls_path)
-        targ_path = (out_path/rel_path).with_suffix('.pt')
+        rel_path = row.path
+        targ_path = row.target
         if args.resume:
             if targ_path.is_file(): continue
         # if targ_path.is_file(): continue
-        os.makedirs(targ_path.parent, exist_ok=True)
+        os.makedirs(Path(targ_path).parent, exist_ok=True)
 
         if Path(row.path) in feature_cache:
             source_feats = feature_cache[Path(row.path)].float()
@@ -151,7 +161,7 @@ def extract(df: pd.DataFrame, wavlm: nn.Module, device, ls_path: Path, out_path:
             feature_cache.clear()
             synthesis_cache.clear()
             gc.collect()
-            time.sleep(4)
+            time.sleep(2)
 
 
 if __name__ == '__main__':

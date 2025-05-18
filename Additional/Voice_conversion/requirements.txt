@@ -5,3 +5,6 @@ scipy
 tensorboard
 soundfile
 matplotlib
+pandas
+fastprogress
+torchaudio

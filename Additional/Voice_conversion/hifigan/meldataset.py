@@ -146,7 +146,7 @@ class MelDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         row = self.audio_files.iloc[index]
         if self._cache_ref_count == 0:
-            audio, sampling_rate = load_wav(self.audio_root_path/row.audio_path)
+            audio, sampling_rate = load_wav(row.audio_path)
             if not self.fine_tuning:
                 audio = normalize(audio) * 0.95
             self.cached_wav = audio
@@ -179,7 +179,7 @@ class MelDataset(torch.utils.data.Dataset):
             
             mel = mel.permute(0, 2, 1) # (1, dim, seq_len) --> (1, seq_len, dim)
         else:
-            mel = torch.load(self.feat_root_path/row.feat_path, map_location='cpu').float() 
+            mel = torch.load(row.feat_path, map_location='cpu').float() 
 
             if len(mel.shape) < 3:
                 mel = mel.unsqueeze(0) # (1, seq_len, dim)
