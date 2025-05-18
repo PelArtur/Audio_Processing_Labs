@@ -11,7 +11,7 @@ train:
   factor: 0.5
   logging_period: 200
   clip_norm: 200
-  num_epochs: 10
+  num_epochs: 50
   checkpoint: Conv-TasNet-checkpoints
 
 optimizer_kwargs:
