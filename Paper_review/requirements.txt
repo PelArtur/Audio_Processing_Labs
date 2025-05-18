@@ -1,8 +1,8 @@
-numpy
-pandas
-matplotlib
-torch
-soundfile
-scipy
-tqdm
-pyyaml
+numpy==2.2.5
+matplotlib==3.10.3
+torch==2.6.0
+torchaudio==2.6.0
+soundfile==0.13.1
+scipy==1.15.3
+tqdm==4.67.1
+pyyaml==6.0.2

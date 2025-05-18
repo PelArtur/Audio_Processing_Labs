@@ -1,4 +1,6 @@
 import torch
+import mir_eval
+import numpy as np
 from itertools import permutations
 
 
@@ -84,3 +86,14 @@ def si_snr_loss(ests, egs):
     max_perutt, _ = torch.max(sisnr_mat, dim=0)
     # si-snr
     return -torch.sum(max_perutt) / N
+
+
+def compute_sdri(reference_sources, estimated_sources, mixture):
+    # SDR after separation
+    sdr_est = sisnr(torch.tensor(reference_sources), torch.tensor(estimated_sources)).numpy()
+
+    # SDR before separation (mixture repeated for each source)
+    mixture_sources = np.tile(mixture, (reference_sources.shape[0], 1))
+    sdr_mixture = sisnr(torch.tensor(reference_sources), torch.tensor(mixture_sources)).numpy()
+    sdri = np.mean(sdr_est - sdr_mixture)
+    return sdri

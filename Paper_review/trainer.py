@@ -3,13 +3,15 @@ import time
 import os
 import sys
 import logging
+import numpy as np
 
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.nn.parallel import data_parallel
 from torch.nn.utils import clip_grad_norm_
-from si_snr_utils import si_snr_loss
+from si_snr_utils import si_snr_loss, sisnr, compute_sdri
 import matplotlib.pyplot as plt
 from conv_tasnet import check_parameters
+from tqdm import tqdm
 
 
 def get_logger(name, format_str="%(asctime)s [%(pathname)s:%(lineno)s - %(levelname)s ] %(message)s",
@@ -75,7 +77,8 @@ class Trainer():
                  logging_period=100,
                  resume=None,
                  stop=10,
-                 num_epochs=100):
+                 num_epochs=100,
+                 inference = False):
         # if the cuda is available and if the gpus' type is tuple
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA device unavailable...exist")
@@ -83,7 +86,26 @@ class Trainer():
             gpuid = (gpuid, )
         self.device = torch.device("cuda:{}".format(gpuid[0]))
         self.gpuid = gpuid
+        self.inference = inference
 
+        if not self.inference:
+            self.__init_train_mode(net, checkpoint, optimizer, optimizer_kwargs, clip_norm, min_lr, patience, logging_period, resume, stop, num_epochs)
+        else:
+            self.net = net.to(self.device)
+
+
+    def __init_train_mode(self,
+                net,
+                checkpoint="checkpoint",
+                optimizer="adam",
+                optimizer_kwargs=None,
+                clip_norm=None,
+                min_lr=0,
+                patience=0,
+                logging_period=100,
+                resume=None,
+                stop=10,
+                num_epochs=100):
         # mkdir the file of Experiment path
         if checkpoint and not os.path.exists(checkpoint):
             os.makedirs(checkpoint)
@@ -229,6 +251,27 @@ class Trainer():
         self.logger.info('<epoch:{:3d}, lr:{:.3e}, loss:{:.3f}, Total time:{:.3f} min> '.format(
             self.cur_epoch, self.optimizer.param_groups[0]['lr'], total_loss_avg, (end-start)/60))
         return total_loss_avg
+
+
+    def eval(self, test_dataloader):
+        self.net.eval()
+        si_snr_all = []
+        sdri = []
+
+        with torch.no_grad():
+            for egs in tqdm(test_dataloader):
+                egs = to_device(egs, self.device)
+                refs = torch.cat(egs["ref"], dim=0)
+                ests = self.net(egs['mix'])
+                ests = torch.stack(ests, dim=0)
+
+                si_snr_i = torch.mean(sisnr(ests, refs))
+                si_snr_all.append(-si_snr_i)
+                sdri.append(-compute_sdri(refs.cpu().numpy(), ests.cpu().numpy(), egs['mix'].cpu().numpy()[0]))
+
+        total_sisnr_avg = sum(si_snr_all) / len(si_snr_all)
+        total_sdri_avg = np.sum(sdri) / len(sdri)
+        return total_sisnr_avg.item(), total_sdri_avg.item()
 
 
     def run(self, train_dataloader, val_dataloader):
