@@ -1,3 +1,8 @@
 numpy
 matplotlib
 scipy
+torch
+librosa
+tqdm
+transformers
+torchaudio
