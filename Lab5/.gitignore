@@ -172,3 +172,4 @@ cython_debug/
 
 #Datasets
 LJSpeech-1.1/
+local_gpt2/
