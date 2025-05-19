@@ -1,0 +1,9 @@
+torch
+pandas
+pytorch_lightning
+numpy
+tqdm
+transformers
+librosa
+hf_xet
+torchaudio
