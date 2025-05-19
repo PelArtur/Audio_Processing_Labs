@@ -173,3 +173,4 @@ cython_debug/
 #Datasets
 birdclef-2025/
 birdclef-2025.zip
+mel_dataset.pkl
