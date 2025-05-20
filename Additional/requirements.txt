@@ -6,3 +6,4 @@ librosa
 tqdm
 transformers
 torchaudio
+confidence_intervals
