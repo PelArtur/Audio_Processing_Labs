@@ -1,0 +1,6 @@
+exp_name: "logdirs/debug_run"
+fold_id: 0
+precision_mode: "16-mixed"
+
+wandb_logger_params:
+  project: "audio-classification-lecture"

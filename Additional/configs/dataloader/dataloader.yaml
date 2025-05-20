@@ -1,0 +1,13 @@
+train_dataloader_config:
+  batch_size: 64
+  shuffle: False
+  drop_last: True
+  num_workers: 8
+  pin_memory: True
+
+val_dataloader_config:
+  batch_size: 64
+  shuffle: False
+  drop_last: False
+  num_workers: 8
+  pin_memory: True

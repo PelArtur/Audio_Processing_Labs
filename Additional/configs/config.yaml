@@ -1,0 +1,6 @@
+defaults:
+  - exp: exp
+  - dataset: dataset
+  - dataloader: dataloader
+  - model: model
+  - train: train

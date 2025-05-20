@@ -1,0 +1,14 @@
+n_epochs: 5
+main_metric: valid_MulticlassF1Score
+metric_mode: max
+forward_batch_key: aus
+metric_input_key: targets
+metric_output_key: predictions
+n_classes: 10
+
+checkpoint_callback_params:
+  save_last: True
+  auto_insert_metric_name: True
+  save_weights_only: True
+  save_on_train_epoch_end: True
+  filename: "{epoch}-{step}-{valid_MulticlassF1Score:.3f}"

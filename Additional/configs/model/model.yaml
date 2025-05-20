@@ -1,0 +1,27 @@
+nn_model_class: SpecCNNClasifier
+nn_model_config:
+  backbone: tf_efficientnet_b0.in1k
+  n_classes: ${train.n_classes}
+  spec_paramms:
+    sample_rate: 32000
+    n_mels: 128
+    f_min: 20
+    n_fft: 1024
+    hop_length: 512
+    normalized: True
+  top_db: 80.0
+  normalize_config:
+    normalize_standart: True
+    normalize_minmax: True
+  pretrained: True
+  spec_augment_config:
+    freq_mask:
+      mask_max_length: 20
+      mask_max_masks: 5
+      p: 1.0
+      inplace: True
+    time_mask:
+      mask_max_length: 30
+      mask_max_masks: 5
+      p: 1.0
+      inplace: True

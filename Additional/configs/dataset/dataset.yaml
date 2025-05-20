@@ -1,0 +1,19 @@
+train_dataset_class: AudioDataset
+val_dataset_class: AudioDataset
+
+train_dataset_config:
+  sample_rate: 32000
+  audio_transforms:
+    _target_: audiomentations.Compose
+    transforms:
+      - _target_: audiomentations.AddGaussianNoise
+        min_amplitude: 0.005
+        max_amplitude: 0.01
+        p: 0.5
+      - _target_: audiomentations.TimeStretch
+        min_rate: 0.8
+        max_rate: 1.2
+        p: 0.5
+
+val_dataset_config:
+  sample_rate: 32000
